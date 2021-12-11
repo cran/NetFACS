@@ -4,16 +4,29 @@
 \alias{multiple.network.plot}
 \title{Plots networks for multiple conditions}
 \usage{
-multiple.network.plot(netfacs.graphs)
+multiple.network.plot(netfacs.graphs, sig.level = 0.01, sig.nodes.only = FALSE)
 }
 \arguments{
-\item{netfacs.graphs}{list of network objects resulting from netfacs.network() function or multiple.netfacs.networks() function}
+\item{netfacs.graphs}{List of network objects resulting from
+\code{\link{netfacs.network}} function or
+\code{\link{multiple.netfacs.network}} function}
+
+\item{sig.level}{Numeric between 0 and 1. P value used to determine whether
+nodes are significant. Default = 0.01.}
+
+\item{sig.nodes.only}{Logical. Should only nodes that were significant in _at
+least_ one of the networks be included in the plots? Default = FALSE.}
 }
 \value{
-Function returns a igraph.plot connections between nodes in the different networks. Elements that are significantly more likely to occur than expected are large, non-significant elements are small, and absent elements are absent.
+Function returns a \code{\link{ggraph}} plot showing connections
+  between nodes in the different networks. Elements that are significantly
+  more likely to occur than expected are large, non-significant elements are
+  small, and absent elements are absent.
 }
 \description{
-The function takes multiple network objects and plots them next to each other while keeping the element positions etc constant. Uses igraph.plot function
+The function takes multiple network objects and plots them next to each other
+while keeping the element positions etc constant. Uses \code{\link{ggraph}}
+function
 }
 \examples{
 data(emotions_set)

@@ -12,19 +12,23 @@ library(ggplot2)
 library(knitr)
 
 ## ----load.netfacs, echo = T, message=F, eval = F------------------------------
-#  # install NetFACS from GitHub
-#  devtools::install_github("NetFACS/NetFACS")
+#  # install NetFACS from CRAN
+#  install.packages("NetFACS")
 #  
 #  # read library
 #  library(NetFACS)
+
+## ----instal.dev, echo = T, message=F, eval = F--------------------------------
+#  # install NetFACS from GitHub
+#  devtools::install_github("NetFACS/NetFACS")
 
 ## ----read.data, echo = T------------------------------------------------------
 data("letternet") # this is the Manifesto #
 data("emotions_set") # this is the CK Database #
 
 ## ----cm.table, echo=FALSE-----------------------------------------------------
-kable(head(letternet[[1]]), row.names = F, caption = "Letter data for words in the Communist Manifesto")
-kable(head(letternet[[2]]), row.names = F, caption = "Additional information for Communist Manifesto")
+kable(head(letternet[[1]]), row.names = FALSE, caption = "Letter data for words in the Communist Manifesto")
+kable(head(letternet[[2]]), row.names = FALSE, caption = "Additional information for Communist Manifesto")
 
 ## ----odd.photo, echo=TRUE-----------------------------------------------------
 odd.photo <- data.frame(
@@ -38,7 +42,7 @@ odd.photo <- data.frame(
     "AU6/AU12"
   )
 )
-kable(odd.photo, row.names = F, caption = "Photo Data")
+kable(odd.photo, row.names = FALSE, caption = "Photo Data")
 
 ## ----odd.video, echo=TRUE-----------------------------------------------------
 odd.video <- data.frame(
@@ -53,7 +57,7 @@ odd.video <- data.frame(
                   0.1, 0.4, 0.4),
   durations = rep(0.3, times = 8)
 )
-kable(odd.video, row.names = F, caption = "Video Data")
+kable(odd.video, row.names = FALSE, caption = "Video Data")
 
 ## ----prepare.net, echo=TRUE---------------------------------------------------
 au.prepared <- prepare.netfacs(
@@ -65,16 +69,16 @@ au.prepared <- prepare.netfacs(
   frame.duration = 0.05
 )
 kable(head(au.prepared$element.matrix),
-      row.names = F,
+      row.names = FALSE,
       caption = "Element Matrix of prepare.netfacs")
 kable(head(au.prepared$video.info),
-      row.names = F,
+      row.names = FALSE,
       caption = "Video Info of prepare.netfacs")
 
 ## ----netfacs.table, echo=FALSE------------------------------------------------
 kable(
   head(angry.face$result[angry.face$result$count > 0,], 20),
-  row.names = F,
+  row.names = FALSE,
   align = "c",
   caption = "Top rows of the netfacs function results"
 )
@@ -82,7 +86,7 @@ kable(
 ## ----first.level.table, echo=FALSE--------------------------------------------
 kable(anger.aus[order(-1 * anger.aus$effect.size),],
       align = "c",
-      row.names = F,
+      row.names = FALSE,
       caption = "Result of netfacs.extract for single elements")
 
 ## ----element.plot, fig.width=6, fig.height=4, fig.align='center', message=F----
@@ -111,7 +115,7 @@ anger.aus3 <- netfacs.extract(
 ## ----third.level.table, echo=FALSE--------------------------------------------
 kable(head(anger.aus3[order(-1 * anger.aus3$effect.size),]),
       align = "c",
-      row.names = F,
+      row.names = FALSE,
       caption = "Results of netfacs.extract function for combinations of three elements")
 
 ## ----element.specificity------------------------------------------------------
@@ -122,9 +126,9 @@ specificity <- element.specificity(netfacs.data = angry.face)
 kable(
   specificity[1],
   align = "c",
-  row.names = F,
+  row.names = FALSE,
   digits = 2,
-  booktabs = T,
+  booktabs = TRUE,
   caption = "Results of the specificity increase in combinations due to to inclusion of each element"
 )
 
@@ -140,7 +144,7 @@ conditional.probs <- network.conditional(
 # show only a number of the conditional probabilities
 kable(
   conditional.probs$conditional.probalities[c(1:6, 31:36),],
-  row.names = F,
+  row.names = FALSE,
   align = "c",
   caption = "Conditional probabilities for a subset of dyadic combinations"
 )
@@ -160,7 +164,7 @@ overlap.net <- overlap.network(
   min.prob = 0, # minimum probability of a connection to be included
   min.count = 3, # minimum count of co-occurrences for a connection to be included
   significance = 0.01, # significance level for combinations to be considered
-  clusters = F, # should the bipartite network be clustered
+  clusters = FALSE, # should the bipartite network be clustered
   plot.bubbles = TRUE,
 )
 
@@ -173,7 +177,7 @@ conditional.probs <- network.conditional(
   min.prob = 0.5,
   min.count = 5,
   ignore.element = NULL,
-  plot.bubbles = T
+  plot.bubbles = TRUE
 )
 
 # plot conditional probabilities
@@ -192,9 +196,9 @@ angry.net <- netfacs.network(
 network.plot(
   netfacs.graph = angry.net,
   title = "angry network",
-  clusters = F,
-  plot.bubbles = T,
-  hide_unconnected = T
+  clusters = FALSE,
+  plot.bubbles = TRUE,
+  hide.unconnected = TRUE
 )
 
 ## ----multi.net----------------------------------------------------------------
@@ -216,7 +220,7 @@ all.face <-
     condition = NULL,
     ran.trials = 1000,
     combination.size = 2,
-    use_parallel = T
+    use_parallel = TRUE
   )
 all.net <-
   netfacs.network(netfacs.data = all.face,
@@ -227,8 +231,8 @@ all.net <-
 network.plot(
   netfacs.graph = all.net,
   title = "all network with clusters",
-  clusters = T,
-  plot.bubbles = T
+  clusters = TRUE,
+  plot.bubbles = TRUE
 )
 
 ## ---- network.summary---------------------------------------------------------
@@ -239,7 +243,7 @@ net.sum <- network.summary(angry.net)
 kable(
   net.sum,
   align = "c",
-  row.names = F,
+  row.names = FALSE,
   digits = 3,
   caption = "Network centrality measures for angry faces"
 )
@@ -251,7 +255,7 @@ net.sum.graph <- network.summary.graph(angry.net)
 kable(
   net.sum.graph,
   align = "c",
-  row.names = F,
+  row.names = FALSE,
   digits = 3,
   caption = "Network graph measures for anry faces"
 )
@@ -267,7 +271,7 @@ xx <- cbind(emotion = names(multi.net), xx)
 kable(
   xx,
   align = "c",
-  row.names = F,
+  row.names = FALSE,
   digits = 3,
   caption = "Network graph measures for all faces"
 )
@@ -280,7 +284,7 @@ size.plot <- event.size.plot(netfacs.data = angry.face)
 kable(
   event.size.angry,
   align = "c",
-  row.names = F,
+  row.names = FALSE,
   digits = 2,
   caption = "Combination sizes of facial expressions in the angry condition"
 )
@@ -295,14 +299,14 @@ happy.face <-
     condition = au.info$emotion,
     test.condition = "happy",
     ran.trials = 1000,
-    use_parallel = T
+    use_parallel = TRUE
   )
 
 ## ----event.size.happy, echo = F-----------------------------------------------
 kable(
   happy.face$event.size.information,
   align = "c",
-  row.names = F,
+  row.names = FALSE,
   digits = 2,
   caption = "Combination sizes of happy expressions in the angry condition"
 )
@@ -318,7 +322,7 @@ xx <- cbind(emotion = names(multi.facs), xx)
 kable(
   xx,
   align = "c",
-  row.names = F,
+  row.names = FALSE,
   digits = 3,
   caption = "Ratios between expected and observed entropies in different emotions"
 )

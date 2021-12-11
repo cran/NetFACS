@@ -1,7 +1,7 @@
 Package: NetFACS
 Title: Network Applications to Facial Communication Data
-Version: 0.2.0
-Date: 2021-10-25
+Version: 0.3.0
+Date: 2021-12-11
 Authors@R: c(
     person(given = "Alex",
            family = "Mielke",
@@ -9,20 +9,20 @@ Authors@R: c(
            email = "mielke.alexand@gmail.com"),
     person(given = "Bridget M.",
            family = "Waller",
-           role = c("ctb")),
+           role = c("aut")),
     person(given = "Claire",
            family = "Perez",
-           role = c("ctb")),
+           role = c("aut")),
     person(given = "Alan V.",
            family = "Rincon",
            role = c("aut", "cre"),
            email = "avrincon1@gmail.com"),
     person(given = "Julie",
            family = "Duboscq",
-           role = c("ctb")),
+           role = c("aut")),
     person(given = "Jerome",
            family = "Micheletta",
-           role = c("ctb"))
+           role = c("aut"))
            )
 Description: Functions to analyze and visualize communication data, 
       based on network theory and resampling methods. 
@@ -35,20 +35,21 @@ Encoding: UTF-8
 LazyData: true
 Suggests: testthat (>= 3.0.0), knitr, rmarkdown
 Depends: R (>= 3.5.0)
-Imports: parallel, doParallel, igraph, ggplot2, ggraph, picante, rlang,
-        Rfast, arrangements
+Imports: arrangements, doParallel, dplyr, igraph, ggplot2, ggraph,
+        magrittr, patchwork, parallel, picante, rlang, Rfast, tibble,
+        tidygraph, tidyr
 RoxygenNote: 7.1.2
 NeedsCompilation: yes
 ByteCompile: true
 VignetteBuilder: knitr
 Config/testthat/edition: 3
-Packaged: 2021-10-31 13:25:14 UTC; avrincon
+Packaged: 2021-12-11 14:16:48 UTC; avrincon
 Author: Alex Mielke [aut],
-  Bridget M. Waller [ctb],
-  Claire Perez [ctb],
+  Bridget M. Waller [aut],
+  Claire Perez [aut],
   Alan V. Rincon [aut, cre],
-  Julie Duboscq [ctb],
-  Jerome Micheletta [ctb]
+  Julie Duboscq [aut],
+  Jerome Micheletta [aut]
 Maintainer: Alan V. Rincon <avrincon1@gmail.com>
 Repository: CRAN
-Date/Publication: 2021-11-02 14:10:05 UTC
+Date/Publication: 2021-12-11 19:10:02 UTC
