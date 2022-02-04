@@ -1,6 +1,6 @@
-798fa1532fcbab4aa2651c710af6a3f1 *DESCRIPTION
+95c47eb9349edb02154ab2007fb24947 *DESCRIPTION
 589c514f4cdaf837f14003f53d51c8ec *NAMESPACE
-036a8ec532e7d89a053b64fd21932a4b *NEWS.md
+ddaba2390f04e7c1a0dfaf3df503db7e *NEWS.md
 996bab87139e43cb4e99a609e62d3fe1 *R/calculate_prob_of_comb.R
 ace3eb386769c153d4550a368909f574 *R/define_contexts.R
 4c64d3309fad9c6a466ab1659060ad50 *R/define_joint_prob.R
@@ -16,7 +16,7 @@ eb0b80512a9c1b51c618c3f4750feed0 *R/multiple_netfacs.R
 03873d4e307351f1777b03b2b98c6a3e *R/multiple_network_plot.R
 f1dbf19e7b01accb6e4d013849b8d9ca *R/mutual_information_condition.R
 ddce61c6f0f3b02c945c10db8a9da603 *R/mutual_information_elements.R
-574480a229ed88359df95bfe6dd8af9f *R/netfacs.R
+4b9f693135e7530a510289a23d369859 *R/netfacs.R
 b6a3c94397d1f792f14f1c6709b30c48 *R/netfacs_extract.R
 543a56c62fa0492c85ed118588922f5a *R/netfacs_network.R
 10e360d40efb8ff51b8baf066e4d06d4 *R/netfacs_reciprocity.R
@@ -28,13 +28,13 @@ c789feb1c457d4aed1811c98608e6a70 *R/overlap_network.R
 0b55cdac162be130630a50d5d832c8c5 *R/prepare_netfacs.R
 e0e19fcd9de18b1a59f224e77f49bac2 *R/sample_contexts.R
 53b7051ca045a2222cacf642c7d75466 *R/sysdata.rda
-b0a360cbc5d4a06661d51dc1d52bbdbb *README.md
+68720d0b4a04c2b55e49c7fef60193e4 *README.md
 40d2ea33999e9ce85c196a73fcd099e9 *build/vignette.rds
 dc46bed3382c67c4470dac67ff893a59 *data/emotions_set.RData
 74fab8742d6925a8b0dd457af9bd9568 *data/letternet.RData
 d328c2f346f324fd5beaa2d228239419 *inst/doc/tutorial.R
 cc30f21590f0d141fc3733881b2509fd *inst/doc/tutorial.Rmd
-3cd94567497d52e75a4c2ae826954289 *inst/doc/tutorial.html
+a80475e308e0ffb817aafd29cc16ba2b *inst/doc/tutorial.html
 e47132ff2250a821bd8e1557c9d6ee03 *man/calculate_prob_of_comb.Rd
 273ddf685338643981039df11a104aa4 *man/define_contexts.Rd
 e444c4a3db5c0eb1e673c0d58a532aa2 *man/define_joint_prob.Rd
@@ -44,11 +44,11 @@ e444c4a3db5c0eb1e673c0d58a532aa2 *man/define_joint_prob.Rd
 f78e24013e66de09a9ca09cf6c7a9c3b *man/emotions_set.Rd
 309cc4fa56463208003932e9573925a0 *man/entropy.overall.Rd
 da838220751d9117826e778bcadd0049 *man/event.size.plot.Rd
-3d1df7e858a8e250c6acc565d0644e15 *man/figures/README-all.plot-1.png
+d1122c58df25238ba7fe4a3652fd0581 *man/figures/README-all.plot-1.png
 85567bd961bedbb20d9a0cb586afb469 *man/figures/README-angry.plot-1.png
 c54f0f78328ca6b11ed002a30af08852 *man/figures/README-conditional.plot-1.png
-a5d36e7b44ce6c9acf7dc3f5bf8db0ea *man/figures/README-distribution.plot-1.png
-5997ca47640bb5b7137ac1ca9c707a6d *man/figures/README-distribution.plot-2.png
+b255c4e0d209413bcf214ad762ded9e2 *man/figures/README-distribution.plot-1.png
+0b983113d69d42c6dc5eb14550d185c8 *man/figures/README-distribution.plot-2.png
 5b4efd7c2bc49f37b62db7d578ec89cf *man/figures/README-element.plot-1.png
 e66fa3f046af86c6974b8df86762cdf1 *man/figures/README-multi.plot-1.png
 d309614d5c44de53ed984f3b6d6fb0b5 *man/figures/README-overlap-1.png
@@ -60,7 +60,7 @@ eaa5c4999762f86b3fc2757cf0e6927b *man/figures/README-size.plot-1.png
 1b5e9ff0ac4bfcec84521d933e516e09 *man/multiple.network.plot.Rd
 a8dbb0575aea8c832920271e5eba7217 *man/mutual.information.Rd
 823fda079853b1ad1cbd4d8fde9ae5ee *man/mutual.information.condition.Rd
-adc88307df3c09e3765a8692479b556b *man/netfacs.Rd
+e766f7ce33216656980659f277887ea7 *man/netfacs.Rd
 c8d30ba25dd29798ff742d1fecee0c90 *man/netfacs.extract.Rd
 16228ad301279d99c0bfc09dc4c41815 *man/netfacs.network.Rd
 32f087ff8b39218819201d36dac28634 *man/netfacs.reciprocity.Rd
