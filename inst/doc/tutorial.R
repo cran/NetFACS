@@ -3,7 +3,9 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.path = "man/figures/README-",
-  out.width = "100%"
+  out.width = "100%", 
+  message = FALSE, 
+  warning = FALSE
 )
 
 ## ----setup, include = FALSE---------------------------------------------------
@@ -75,6 +77,35 @@ kable(head(au.prepared$video.info),
       row.names = FALSE,
       caption = "Video Info of prepare.netfacs")
 
+## ----netfacs, cache=T---------------------------------------------------------
+# here, we test whether any Action Units and combinations appear more frequently than expected under one condition than under another.
+# load data
+au.data <- emotions_set[[1]]
+# this is the basic data frame, with each video represented by a row, and each Action Unit represented by a column
+
+au.info <- emotions_set[[2]]
+# this is the additional information about the emotions etc
+
+# We remove AU 25 here, because it is not informative, and all AUs that have 2 or fewer occurrences, because not meaningful interpretation is available for them
+au.data <- au.data[, setdiff(colnames(au.data), "25")]
+au.data <- au.data[, colSums(au.data) > 2]
+
+# create netfacs object for angry faces
+angry.face <- netfacs(
+  data = au.data, # this is the data matrix
+  condition = au.info$emotion, # info about condition of each case
+  test.condition = "anger", # condition we are interested in
+  null.condition = NULL, # null condition (test against all other emotions)
+  duration = NULL, # we could add duration information for videos
+  ran.trials = 1000, # number of randomizations. The larger the better
+  control = NULL, # control variables, e.g. gender, ethnicity etc.
+  random.level = NULL, # Works like a random effect.
+  combination.size = 4, # limit the analysis to make things faster,
+  tail = "upper.tail", # should the p-value reflect two-tailed or right/left tailed testing?
+  use_parallel = TRUE, # use parallel processing
+  n_cores = NULL # number of cores for parallel processing
+)
+
 ## ----netfacs.table, echo=FALSE------------------------------------------------
 kable(
   head(angry.face$result[angry.face$result$count > 0,], 20),
@@ -83,11 +114,22 @@ kable(
   caption = "Top rows of the netfacs function results"
 )
 
+## ----extract.anger, cache=T---------------------------------------------------
+# extract angry face information for the first level (single elements)
+anger.aus <- netfacs_extract(
+  netfacs.data = angry.face,
+  combination.size = 1, # only looking at combinations with 1 element (here, Action Units)
+  min.count = 1, # minimum number of times that the combination should occur
+  min.prob = 0, # minimum observed probability of the combination
+  min.specificity = 0, # minimum specificity of the combination
+  significance = 0.01
+) # significance level we are interested in
+
 ## ----first.level.table, echo=FALSE--------------------------------------------
 kable(anger.aus[order(-1 * anger.aus$effect.size),],
       align = "c",
       row.names = FALSE,
-      caption = "Result of netfacs.extract for single elements")
+      caption = "Result of netfacs_extract for single elements")
 
 ## ----element.plot, fig.width=6, fig.height=4, fig.align='center', message=F----
 # create plot showing the importance of each AU for the angry faces
@@ -103,9 +145,9 @@ distribution.plot(netfacs.data = angry.face)$"9"
 ## ----third.level.anger--------------------------------------------------------
 # extract information for three-element-combinations in angry faces
 
-anger.aus3 <- netfacs.extract(
+anger.aus3 <- netfacs_extract(
   netfacs.data = angry.face,
-  level = 3, # only looking at combinations with 3 elements (here, Action Units)
+  combination.size = 3, # only looking at combinations with 3 elements (here, Action Units)
   min.count = 5, # minimum number of times that the combination should occur
   min.prob = 0, # minimum observed probability of the combination
   min.specificity = 0, # minimum specificity of the combination
@@ -116,7 +158,7 @@ anger.aus3 <- netfacs.extract(
 kable(head(anger.aus3[order(-1 * anger.aus3$effect.size),]),
       align = "c",
       row.names = FALSE,
-      caption = "Results of netfacs.extract function for combinations of three elements")
+      caption = "Results of netfacs_extract function for combinations of three elements")
 
 ## ----element.specificity------------------------------------------------------
 
@@ -150,7 +192,7 @@ kable(
 )
 
 ## ----multi.facs---------------------------------------------------------------
-multi.facs <- multiple.netfacs(
+multi.facs <- netfacs_multiple(
   data = au.data,
   condition = au.info$emotion,
   ran.trials = 1000,
@@ -326,4 +368,15 @@ kable(
   digits = 3,
   caption = "Ratios between expected and observed entropies in different emotions"
 )
+
+## ---- eval = F----------------------------------------------------------------
+#  # create an edge table
+#  anger.tab <- igraph::as_data_frame(multi.net$anger)
+#  
+#  # create an adjacency matrix
+#  anger.adj.mat <- as.matrix(igraph::as_adjacency_matrix(multi.net$anger))
+#  
+#  # save as CSV file
+#  # write.csv(anger.tab, "anger_net_tab.csv")
+#  # write.csv(anger.adj.mat, "adj_net_mat.csv")
 

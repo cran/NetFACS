@@ -2,54 +2,46 @@
 % Please edit documentation in R/netfacs_extract.R
 \name{netfacs.extract}
 \alias{netfacs.extract}
-\title{Extract results of 'netfacs' function for specific combination sizes
-For the selected combination size, the function returns all combinations that had significantly higher probabilities of occuring than expected under the null condition}
+\title{(Deprecated) Extract results from a \code{\link{netfacs}} object.}
 \usage{
 netfacs.extract(
   netfacs.data,
-  level = 1,
-  min.count = 1,
+  combination.size = NULL,
+  significance = 1,
+  min.count = 0,
   min.prob = 0,
   min.specificity = 0,
-  significance = 0.01
+  level
 )
 }
 \arguments{
-\item{netfacs.data}{object resulting from netfacs() function}
+\item{netfacs.data}{object resulting from \code{\link{netfacs}} function.}
 
-\item{level}{combination size for which all remaining combinations should be extracted}
+\item{combination.size}{numeric, denoting the combination size(s) that should
+be extracted. If NULL (default), all combination sizes are returned.}
 
-\item{min.count}{numeric value, suggesting how many times a combination should at least occur to be displayed}
+\item{significance}{numeric value between 0 and 1, determining the p-value
+below which combinations are considered to be dissimilar enough from the
+null distribution.}
 
-\item{min.prob}{numeric value, suggesting the probability at which a combination should at least occur to be displayed}
+\item{min.count}{numeric value, suggesting how many times a combination
+should at least occur to be displayed.}
 
-\item{min.specificity}{numeric value, suggesting the specificity a combination should at least have for the test condition to be displayed}
+\item{min.prob}{numeric value between 0 and 1, suggesting the probability at
+which a combination should at least occur to be displayed.}
 
-\item{significance}{numeric value, determining the p-value below which combinations are considered to be dissimilar enough from the null distribution}
+\item{min.specificity}{numeric value between 0 and 1, suggesting the
+specificity a combination should at least have for the test condition to be
+displayed.}
+
+\item{level}{deprecated. Please use combination.size instead.}
 }
 \value{
-Function returns a dataframe that includes all combinations for the selected combination size that fulfil the selected criteria
+Function returns a dataframe that contains the results of the
+  \code{\link{netfacs}} object. By default, returns all results for all
+  observed combinations
 }
 \description{
-Extract results of 'netfacs' function for specific combination sizes
-For the selected combination size, the function returns all combinations that had significantly higher probabilities of occuring than expected under the null condition
-}
-\examples{
-### how do angry facial expressions differ from non-angry ones?
-data(emotions_set)
-angry.face <- netfacs(
-  data = emotions_set[[1]],
-  condition = emotions_set[[2]]$emotion,
-  test.condition = "anger",
-  ran.trials = 100,
-  combination.size = 2
-)
-
-netfacs.extract(angry.face,
-  level = 2,
-  min.count = 5,
-  min.prob = 0.01,
-  min.specificity = 0.5,
-  significance = 0.01
-)
+This function is deprecated. Please see \code{\link{netfacs_extract}}
+instead
 }

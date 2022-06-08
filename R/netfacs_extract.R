@@ -1,14 +1,27 @@
-#' Extract results of 'netfacs' function for specific combination sizes
-#' For the selected combination size, the function returns all combinations that had significantly higher probabilities of occuring than expected under the null condition
+#' Extract results from a netfacs object
 #'
-#' @param netfacs.data object resulting from netfacs() function
-#' @param level combination size for which all remaining combinations should be extracted
-#' @param min.count numeric value, suggesting how many times a combination should at least occur to be displayed
-#' @param min.prob numeric value, suggesting the probability at which a combination should at least occur to be displayed
-#' @param min.specificity numeric value, suggesting the specificity a combination should at least have for the test condition to be displayed
-#' @param significance numeric value, determining the p-value below which combinations are considered to be dissimilar enough from the null distribution
+#' Extract results from a \code{\link{netfacs}} object.
 #'
-#' @return Function returns a dataframe that includes all combinations for the selected combination size that fulfil the selected criteria
+#' @param netfacs.data object resulting from \code{\link{netfacs}} function.
+#' @param combination.size numeric, denoting the combination size(s) that should
+#'   be extracted. If NULL (default), all combination sizes are returned.
+#' @param significance numeric value between 0 and 1, determining the p-value
+#'   below which combinations are considered to be dissimilar enough from the
+#'   null distribution.
+#' @param min.count numeric value, suggesting how many times a combination
+#'   should at least occur to be displayed.
+#' @param min.prob numeric value between 0 and 1, suggesting the probability at
+#'   which a combination should at least occur to be displayed.
+#' @param min.specificity numeric value between 0 and 1, suggesting the
+#'   specificity a combination should at least have for the test condition to be
+#'   displayed.
+#'
+#' @return Function returns a dataframe that contains the results of the
+#'   \code{\link{netfacs}} object. By default, returns all results for all
+#'   observed combinations
+#'
+#' @importFrom dplyr filter
+#' @importFrom dplyr mutate
 #'
 #' @export
 #'
@@ -23,32 +36,77 @@
 #'   combination.size = 2
 #' )
 #'
-#' netfacs.extract(angry.face,
-#'   level = 2,
+#' netfacs_extract(angry.face,
+#'   combination.size = 2,
+#'   significance = 0.01,
 #'   min.count = 5,
 #'   min.prob = 0.01,
-#'   min.specificity = 0.5,
-#'   significance = 0.01
+#'   min.specificity = 0.5
 #' )
+netfacs_extract <- function(netfacs.data,
+                            combination.size = NULL,
+                            significance = 1,
+                            min.count = 0,
+                            min.prob = 0,
+                            min.specificity = 0) {
+  d <- netfacs.data$result 
+  
+  if (is.null(combination.size)) {
+    combination.size <- unique(d$combination.size)
+  }
+  
+  d <- 
+    d %>% 
+    filter(.data$combination.size %in% {{combination.size}},
+           .data$observed.prob >= min.prob,
+           .data$count >= min.count,
+           .data$pvalue <= significance)
+  
+  # specificity is only relevant for bootstrap results
+  if (attr(netfacs.data, "stat_method") == "bootstrap") {
+    d <- 
+      d %>% 
+      filter(.data$specificity >= min.specificity)
+  }
+  
+  return(d)
+}
+
+
+#' (Deprecated) Extract results from a \code{\link{netfacs}} object.
+#'
+#' This function is deprecated. Please see \code{\link{netfacs_extract}}
+#' instead
+#'
+#' @inheritParams netfacs_extract
+#' @param level deprecated. Please use combination.size instead.
+#' 
+#' @return Function returns a dataframe that contains the results of the
+#'   \code{\link{netfacs}} object. By default, returns all results for all
+#'   observed combinations
+#'
+#' @export
 netfacs.extract <- function(netfacs.data,
-                            level = 1,
-                            min.count = 1,
+                            combination.size = NULL,
+                            significance = 1,
+                            min.count = 0,
                             min.prob = 0,
                             min.specificity = 0,
-                            significance = 0.01) {
+                            level) {
 
-  # set digits printed to 3, restore user state
-  op <- options(digits = 3)         
-  on.exit(options(op), add = TRUE) 
-
-  net.data <- netfacs.data$result[netfacs.data$result$combination.size == level, ]
-  if (is.null(netfacs.data$used.parameters$test.condition)) {
-    net.data$specificity <- 1
-    net.data$prob.increase <- net.data$observed.prob / net.data$expected.prob
+  .Deprecated("netfacs_extract")
+  
+  if (!missing(level)) {
+    warning("argument level is deprecated; please use combination.size instead.", 
+            call. = FALSE)
+    combination.size <- level
   }
-  net.data <- net.data[net.data$observed.prob >= min.prob & net.data$count >= min.count & net.data$specificity >= min.specificity & net.data$pvalue <= significance, ]
-  net.data <- net.data[!is.na(net.data$combination), ]
-  rownames(net.data) <- net.data$combination
-
-  return(net.data)
+  netfacs_extract(
+    netfacs.data = netfacs.data,
+    combination.size = combination.size,
+    significance = significance,
+    min.count = min.count,
+    min.prob = min.prob,
+    min.specificity = min.specificity
+  )
 }
