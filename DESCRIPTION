@@ -1,7 +1,7 @@
 Package: NetFACS
 Title: Network Applications to Facial Communication Data
-Version: 0.4.0
-Date: 2022-05-09
+Version: 0.5.0
+Date: 2022-12-06
 Authors@R: c(
     person(given = "Alex",
            family = "Mielke",
@@ -37,13 +37,13 @@ Suggests: testthat (>= 3.0.0), knitr, rmarkdown
 Depends: R (>= 3.5.0)
 Imports: arrangements, doParallel, dplyr, igraph, ggplot2, ggraph,
         magrittr, patchwork, parallel, picante, rlang, Rfast, tibble,
-        tidygraph, tidyr, vctrs
-RoxygenNote: 7.1.2
+        tidygraph, tidyr, vctrs, methods
+RoxygenNote: 7.2.1
 NeedsCompilation: yes
 ByteCompile: true
 VignetteBuilder: knitr
 Config/testthat/edition: 3
-Packaged: 2022-06-08 09:33:20 UTC; avrincon
+Packaged: 2022-12-06 17:06:53 UTC; avrincon
 Author: Alex Mielke [aut],
   Bridget M. Waller [aut],
   Claire Perez [aut],
@@ -52,4 +52,4 @@ Author: Alex Mielke [aut],
   Jerome Micheletta [aut]
 Maintainer: Alan V. Rincon <avrincon1@gmail.com>
 Repository: CRAN
-Date/Publication: 2022-06-08 14:40:11 UTC
+Date/Publication: 2022-12-06 17:32:35 UTC

@@ -139,17 +139,17 @@ netfacs_randomize <- function(m,
 #' @param observed.prob A vector with probability of combination in test data
 #' @param tail upper.tail or lower.tail,
 #' @param test.count Number of times a combination occurs in test dataset
-#' @param null.count Number of times a combination occurs in null dataset
 #'
 #' @importFrom Rfast rowsums Table
 #' @return A dataframe
-summarise_combination <- function(combination,
-                                  combination.size,
-                                  observed.prob,
-                                  boot.prob,
-                                  tail,
-                                  test.count,
-                                  null.count = NULL) {
+summarise_combination <- function(
+    combination,
+    combination.size,
+    observed.prob,
+    boot.prob,
+    tail,
+    test.count
+) {
   # check that arguments have same number of observations
   if (!equal_observations(combination, boot.prob, observed.prob)) {
     stop("combination, boot.prob, and observed.prob arguments must have the same number of observations.")
@@ -161,7 +161,7 @@ summarise_combination <- function(combination,
   # create probability increase by comparing the observed probability with the
   # mean probability of the randomization process
   prob.increase <- observed.prob / expected.prob
-  prob.increase[is.infinite(prob.increase)] <- NA # Inf occurs when dividing 0/0
+  prob.increase[is.infinite(prob.increase)] <- NA # Inf occurs when dividing n/0
   
   if (tail == "upper.tail") {
     pvalue <- Rfast::rowmeans(boot.prob >= observed.prob)
@@ -181,16 +181,7 @@ summarise_combination <- function(combination,
       pvalue = pvalue,
       prob.increase = prob.increase
     )
-  
-  # specificity is calculated only when a condition vector was specified
-  # specificity: divide how often the combination occurs in the test condition by
-  # the total count (test + null condition)
-  if (!is.null(null.count)) {
-    if (!equal_observations(test.count, null.count)) {
-      stop("test.count and null.count arguments must have the same number of observations.")
-    }
-    out$specificity <- test.count / (test.count + null.count)
-  } 
+
   return(out)
 }
 
@@ -267,27 +258,35 @@ probability_of_event_size <- function(elements,
 
 
 #' Calculate probabilities of single elements and combinations occurring
-#' @param elements list with vectors for all elements observed together at each
-#'   event
+#' @param elements A vector with all elements observed together at an event. Or
+#'   a list of vectors or a binary matrix with elements as \code{colnames()}
 #' @param maxlen maximum size of combinations to be considered
+#' @param sep String. Separator used for showing combinations of elements
 #'
 #' @return Function returns a dataframe with observed probabilities for each
 #'   combination in the dataset
 #'
 #' @importFrom Rfast Table
-#' @importFrom arrangements combinations
-probability_of_combination <- function(elements, maxlen) {
-  # calculate all combinations per observation
-  combs <- unlist(
-    lapply(elements, function(x) {
-      possible_combinations(x, maxlen)
-    })
-  )
+probability_of_combination <- function(elements, maxlen, sep = "_") {
+  if (is.matrix(elements)) {
+    elements <- get_active_elements(elements)
+  }
   
+  # calculate all combinations per observation
+  if (is.list(elements)) {
+    combs <- unlist(
+      lapply(elements, function(x) {
+        possible_combinations(x, maxlen, sep)
+      })
+    )  
+  } else if (is.vector(elements)) {
+    combs <- possible_combinations(elements, maxlen, sep)
+  }
+
   # count how many times each AU combination occurred
   n.combs <- Table(combs)
   observed.prob <- n.combs / length(elements)
-  
+
   # put results in a data frame
   data.frame(
     combination = names(observed.prob),
@@ -297,7 +296,19 @@ probability_of_combination <- function(elements, maxlen) {
   )
 }
 
-possible_combinations <- function(elements, maxlen) {
+#' Calculate all possible combinations of elements
+#' 
+#' Takes a vector of elements and returns a vector with all possible
+#' combinations
+#' 
+#' @param elements A vector of elements
+#' @param maxlen maximum size of combinations to be considered
+#' @param sep String. Separator used for showing combinations of elements
+#'
+#' @return A vector with all element combinations
+#'
+#' @importFrom arrangements combinations
+possible_combinations <- function(elements, maxlen, sep = "_") {
   unlist(
     lapply(
       1:min(length(elements), maxlen),
@@ -305,7 +316,7 @@ possible_combinations <- function(elements, maxlen) {
         apply(
           combinations(x = elements, k = comb_len),
           MARGIN = 1,
-          FUN = paste, collapse = "_"
+          FUN = paste, collapse = sep
         )
       }
     )
@@ -376,4 +387,92 @@ equal_observations <- function(x, ...) {
       function(z) vctrs::vec_size(z) == vctrs::vec_size(x)
     )
   )
+}
+
+# validate function arguments ---------------------------------------------
+
+#' Check that 'data' argument is formatted correctly
+#'
+#' @param data data passed by the user
+#'
+#' @return data as a matrix
+validate_data <- function(data) {
+  if (missing(data)) {
+    stop("Data must be specified using the 'data' argument.", call. = FALSE)
+  }
+  if (!isTRUE(nrow(data) > 0L)) {
+    stop("Argument 'data' does not contain observations.", call. = FALSE)
+  }
+  
+  # elements will later be split and combined using "_", and therefore element names must not contain "_"
+  if (any(grepl(pattern = "_", colnames(data)))) {
+    stop("Column names of 'data' must not contain '_'.", call. = FALSE)
+  }
+  
+  # data must be coercible to a binary matrix
+  data <- try(as.matrix(data), silent = TRUE)
+  if (methods::is(data, "try-error")) {
+    stop("Argument 'data' must be coercible to a matrix.", call. = FALSE)
+  }
+  # checking for character "0","1" ensures that the common mistake of having "o" (or other characters) in the matrix is not coerced to NA unintentionally
+  if (isFALSE(all(data %in% c(0,1) | data %in% c("0", "1", " 0", " 1", "NA", NA), 
+                  na.rm = TRUE) )) {
+    stop("Argument 'data' must a binary matrix (containing only 0 or 1) or be coercible to one.", call. = FALSE)
+  }
+  
+  # suppressWarnings(apply(data, 2, as.numeric))
+  data
+}
+
+#' Check that condition arguments are formatted correctly
+#'
+#' @param data data passed by the user
+#' @param condition condition passed by the user
+#' @param test.condition condition passed by the user
+#' @param null.condition condition passed by the user
+validate_condition <- function(data,
+                               condition,
+                               test.condition,
+                               null.condition) {
+  # ********* validation when "condition" IS specified
+  # ********* i.e. when doing bootstraps 
+  if (!is.null(condition)) {
+    if (any(is.na(condition))) {
+      stop("Argument 'condition' must not contain NA.",
+           call. = FALSE
+      )
+    }
+    # Error messages in case test.condition is wrongly specified
+    if (length(condition) != nrow(data)) {
+      stop("Argument 'condition' must be the same length as nrow 'data'.",
+           call. = FALSE
+      )
+    }
+    if (is.null(test.condition)) {
+      stop("Argument 'condition' has been specified without a 'test.condition'. Specify 'test.condition'.", call. = FALSE)
+    }
+    if (!test.condition %in% condition) {
+      stop("Argument 'test.condition' is not part of the 'condition' vector.",
+           call. = FALSE
+      )
+    }
+    if (!is.null(null.condition)) {
+      if (!null.condition %in% condition) {
+        stop("Argument 'null.condition' is not part of the 'condition' vector.",
+             call. = FALSE
+        )
+      }
+    }
+  }
+  
+  # ********* validation when "condition" is NOT specified
+  # ********* i.e. when doing permutations
+  if (is.null(condition)) {
+    if (!is.null(test.condition)) {
+      warning("test.condition was specified without a condition vector. Ignoring test.condition.", call. = FALSE)
+    }
+    if (!is.null(null.condition)) {
+      warning("null.condition was specified without a condition vector. Ignoring null.condition.", call. = FALSE)
+    }
+  }
 }

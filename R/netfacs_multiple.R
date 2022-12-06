@@ -13,9 +13,12 @@
 #'   information on the condition each event belongs to, so probabilities can be
 #'   compared across conditions
 #'
-#' @return Function returns for each level of the condition a list equivalent to
-#'   the results of the netfacs function; can be used to create multiple
-#'   networks and graphs at the same time
+#' @return An object of class \code{netfacs_multiple}, which contains the
+#'   probabilities of observing element combinations in one condition vs. all
+#'   other conditions, along with other useful information. The resulting object
+#'   is the basis for most other functions in this package.
+#'
+#' @seealso \code{\link{netfacs}}, \code{\link{netfacs_extract}},
 #'
 #' @export
 #'
@@ -28,8 +31,7 @@
 #'   combination.size = 2
 #' )
 #'
-#' head(emo.faces$anger$result, 5)
-#' head(emo.faces$happy$result, 5)
+#' netfacs_extract(emo.faces)
 netfacs_multiple <- function(data,
                              condition,
                              duration = NULL,
@@ -42,10 +44,15 @@ netfacs_multiple <- function(data,
                              n_cores = 2) {
   
   if (length(condition) != nrow(data)) {
-    stop("condition vector must be the same length as nrow(data).",
+    stop("Argument 'condition' must be the same length as nrow 'data'.",
          call. = FALSE
     )
   }
+  if (length(unique(condition)) < 2) {
+    stop("Argument 'condition' must have more than one unique value", 
+         call. = FALSE)
+  }
+  
   conditions <- sort(unique(condition))
   
   out <- lapply(conditions, function(x) {
@@ -68,12 +75,13 @@ netfacs_multiple <- function(data,
   
   # set class and attributes
   out <- structure(
-    out, 
-    class = "netfacs_multiple",
+    out,
+    class = c("netfacs_multiple", class(out[[1]])),
     stat_method = "bootstrap",
     random_trials = ran.trials
   )
   
+  # class(out) <- c("netfacs_multiple", class(out[[1]]))
   return(out)
 }
 

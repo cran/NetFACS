@@ -10,8 +10,7 @@ summarise_combination(
   observed.prob,
   boot.prob,
   tail,
-  test.count,
-  null.count = NULL
+  test.count
 )
 }
 \arguments{
@@ -27,8 +26,6 @@ columns}
 \item{tail}{upper.tail or lower.tail,}
 
 \item{test.count}{Number of times a combination occurs in test dataset}
-
-\item{null.count}{Number of times a combination occurs in null dataset}
 }
 \value{
 A dataframe

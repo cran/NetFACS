@@ -5,63 +5,65 @@
 #' probabilities that elements and combinations of elements occur in this data
 #' set, and whether this differs from a null condition.
 #'
-#' @param data matrix with one column per element, and one row per event,
-#'   consisting of 1 (element was active during that event) and 0 (element was
-#'   not active)
-#' @param condition character vector of same length as 'data' that contains
+#' @param data A binary matrix with one column per element, and one row per
+#'   event, consisting of 1 (element was active during that event) and 0
+#'   (element was not active).
+#' @param condition A character vector the same length as 'data' that contains
 #'   information on the condition each event belongs to, so probabilities can be
 #'   compared across conditions; if NULL, all events will be tested against a
-#'   random null condition based on permutations
-#' @param test.condition level of 'condition' that is supposed to be tested
-#' @param null.condition level of 'condition' that is used to create the null
-#'   distribution of values; if NULL, all levels that are not the test condition
-#'   will be used
-#' @param duration numeric vector that contains information on the duration of
-#'   each event; if NULL, all events are assumed to have equal duration
+#'   random null condition based on permutations.
+#' @param test.condition A string, indicating the level of 'condition' that is
+#'   supposed to be tested.
+#' @param null.condition A string, indicating the level of 'condition' that is
+#'   used to create the null distribution of values; if NULL, all levels that
+#'   are not the test condition will be used.
+#' @param duration A numeric vector that contains information on the duration of
+#'   each event; if NULL, all events are assumed to have equal duration.
 #' @param ran.trials Number of randomisations that will be performed to find the
-#'   null distribution
-#' @param random.level character vector of the level on which the randomization
-#'   should take place. If NULL, the randomization takes place on the event
-#'   level (i.e., every row can either be selected or not); if a vector is
-#'   provided, the randomization takes place on the levels of that vector rather
-#'   than individual events
-#' @param control list of vectors that are used as control variables. During
+#'   null distribution.
+#' @param random.level A character vector of the level on which the
+#'   randomization should take place. If NULL, the randomization takes place on
+#'   the event level (i.e., every row can either be selected or not); if a
+#'   vector is provided, the randomization takes place on the levels of that
+#'   vector rather than individual events.
+#' @param control A list of vectors that are used as control variables. During
 #'   bootstraps, the ratio of events in each level will be adapted. So, for
 #'   example, if in the test distribution, there are three angry participants
-#'   for each happy participant, the null distribution will maintain that ratio
-#' @param combination.size if not all combinations of elements are of interest
-#'   (e.g., if the question only concerns single elements or dyads of elements),
-#'   this variable allows to reduce the results to those combinations,
-#'   increasing speed
-#' @param tail either 'upper.tail' (proportion of null probabilities that are
+#'   for each happy participant, the null distribution will maintain that ratio.
+#' @param combination.size A positive integer, indicating the maximum
+#'   combination size of element combinations. Higher numbers will increase
+#'   computation time. Default is 2.
+#' @param tail Either 'upper.tail' (proportion of null probabilities that are
 #'   larger than observed probabilities), or 'lower.tail' (proportion of null
 #'   probabilities that are smaller than observed probabilities); default is
-#'   'upper.tail'
-#' @param use_parallel logical, should the bootstrap be parallelized (default is
-#'   \code{TRUE})
-#' @param n_cores numeric, the number cores to be used for parallelization.
-#'   Default is the number of available cores minus 1.
+#'   'upper.tail'.
+#' @param use_parallel Logical, indicating whether randomization or bootstrap
+#'   should be parallelized (default is \code{TRUE})
+#' @param n_cores Numeric, indicating the number cores to be used for
+#'   parallelization. Default is 2.
 #'
-#' @details Expected values are based on bootstraps of null distribution, so the
-#'   values represent distribution of element co-occurrence under null
-#'   condition; or permutations of the observed distribution to test it against
-#'   'random'.
+#' @return An object of class \code{netfacs}, which contains the probabilities
+#'   of observing element combinations in the data, along with other useful
+#'   information. The resulting object is the basis for most other functions in
+#'   this package.
 #'
-#'   The resulting object is the basis for most other functions in this package.
+#' @details If the 'condition' and 'test.condition' arguments are specified, the
+#'   null distribution of probability values are based on bootstraps of the null
+#'   condition. If the 'condition' argument is not specified, the null
+#'   distribution is based on random permutations of the data.
 #'
-#' @return Function returns a Result data frame that includes the combination
-#'   name, how many elements it consisted of, how often it was observed, the
-#'   probability it was observed under this condition, the expected probability
-#'   under null condition (based on the permutation or bootstrap), effect size
-#'   (difference between observed probability and expected probability), p-value
-#'   (how many randomisations were more extreme), and for direct comparisons of
-#'   contexts the specificity (probability that the condition is in fact the
-#'   test condition if that combination is known) and probability increase (the
-#'   factor by which the probability of the element is higher in the test than
-#'   null condition)
-#' @return 'event.size.information' contains information about the observed and
-#'   expected size of combination or elements per event based on the
-#'   randomisations
+#'   For a general overview on how to use the netfacs function and package see
+#'   \code{vignette("netfacs_tutorial")}.
+#'
+#' @author Alex Mielke, Alan V. Rincon
+#'
+#' @references Mielke, A., Waller, B. M., Perez, C., Rincon, A. V., Duboscq, J.,
+#'   & Micheletta, J. (2021). NetFACS: Using network science to understand
+#'   facial communication systems. \emph{Behavior Research Methods}.
+#'   \code{https://doi.org/10.3758/s13428-021-01692-5}
+#'
+#' @seealso \code{\link{netfacs_multiple}}, \code{\link{netfacs_extract}},
+#'   \code{\link{conditional_probabilities}}
 #'
 #' @importFrom picante randomizeMatrix
 #' @importFrom arrangements combinations
@@ -73,10 +75,8 @@
 #' @importFrom parallel stopCluster
 #' @importFrom doParallel registerDoParallel
 #' @importFrom Rfast rowsums rowmeans Table
-#'
-#'
-#' @author Alex Mielke, Alan V. Rincon
 #' @export
+#'
 #'
 #' @examples
 #' ### how do angry facial expressions differ from non-angry ones?
@@ -100,7 +100,7 @@
 #' head(angry.face$result, 20)
 #' angry.face$event.size.information
 #' }
-#'
+#' 
 netfacs <- function(data,
                     condition = NULL,
                     test.condition = NULL,
@@ -113,16 +113,18 @@ netfacs <- function(data,
                     tail = "upper.tail",
                     use_parallel = TRUE,
                     n_cores = 2) {
+  
+  # validate data passed by user
   if (any(is.na(data) | any(is.na(condition)))) {
     stop("Please remove all NAs from the data and/or condition vector.",
          call. = FALSE
     )
   }
-  # elements will later be split and combined using "_", and therefore element names must not contain "_"
-  if (any(grepl(pattern = "_", colnames(data)))) {
-    stop("Column names of data must not contain '_'.", call. = FALSE)
-  }
+  data <- validate_data(data)
+  validate_condition(data, condition, test.condition, null.condition)
   
+  # format data
+  data <- apply(data, 2, as.numeric)
   # clean names of dataset to not include special characters or spaces
   colnames(data) <- gsub(
     colnames(data),
@@ -153,27 +155,6 @@ netfacs <- function(data,
   
   # data preparation happens for two different cases: either 'condition' is set, in which case the 'test.condition' is tested against all other cases or against one specific 'null.condition'; alternatively, if no condition is set, the probabilities are compared with random probabilities
   if (!is.null(condition)) {
-    # Error messages in case test.condition is wrongly specified
-    if (length(condition) != nrow(data)) {
-      stop("condition vector must be the same length as nrow(data).",
-           call. = FALSE
-      )
-    }
-    if (is.null(test.condition)) {
-      stop("Specify test condition.", call. = FALSE)
-    }
-    if (!test.condition %in% condition) {
-      stop("Test condition is not part of the condition vector.",
-           call. = FALSE
-      )
-    }
-    if (!is.null(null.condition)) {
-      if (!null.condition %in% condition) {
-        stop("Null condition is not part of the condition vector.",
-             call. = FALSE
-        )
-      }
-    }
     
     # if random.level is not defined, each event/row is its own case, and all events are compared against each other. If random.level is defined, the randomization will select cases based on which level they belong to
     if (is.null(random.level)) {
@@ -181,10 +162,10 @@ netfacs <- function(data,
     }
     
     # if the null condition is not determined, all cases that are not part of the test dataset are classed as null condition
-    condition <- as.character(condition)
+    condition.vec <- as.character(condition)
     if (is.null(null.condition)) {
       null.condition <- "all"
-      condition[condition != test.condition] <- null.condition
+      condition.vec[condition.vec != test.condition] <- null.condition
     }
     
     # the control argument, which is entered as a list (to allow for multiple control variables) is turned into a combination of those variables. E.g., if you control for sex and social group, then each individual or is classed as sex_group
@@ -212,7 +193,7 @@ netfacs <- function(data,
     d <-
       list(
         data = data,
-        condition = condition,
+        condition = condition.vec,
         random.level = random.level,
         control = control.obj
       )
@@ -240,8 +221,11 @@ netfacs <- function(data,
     comb.size <- Rfast::rowsums(data)
     if (any(comb.size == 0)) {
       d <- lapply(d, function(x) vctrs::vec_slice(x, comb.size > 0))
+      condition <- vctrs::vec_slice(condition, comb.size > 0)
       NN <- sum(comb.size == 0)
-      message(paste("Removing", NN, "rows with 0 active elements from data."))
+      rlang::inform(
+        paste("Removing", NN, "rows with 0 active elements from data.")
+      )
     }
     
     ### turn data into test data and null data
@@ -395,8 +379,8 @@ netfacs <- function(data,
         observed.prob = rs.test$observed.prob,
         boot.prob = boot.prob,
         tail = tail,
-        test.count = rs.test$count,
-        null.count = null.count
+        test.count = rs.test$count#,
+        # null.count = null.count
       )
     
     ##### combination size information per event
@@ -417,35 +401,30 @@ netfacs <- function(data,
     rownames(boot.prob) <- rs.test$combination
     used.data <- list(
       data = d$data,
-      condition = d$condition,
+      condition = condition,
       random.level = d$random.level,
       control = d$control,
       random.prob = boot.prob
     )
+    
+    # so that the output of null.condition matches the function argument input
+    if (null.condition == "all") null.condition <- NULL
   }
   
   # condition is not specified -----------------------------------------
   
   ###### the following calculations are done when there is no condition specified, meaning the observed probability across all cases is compared to a null model based on permutations maintaining the event size and element probability
   if (is.null(condition)) {
-    if (!is.null(test.condition)) {
-      warning("test.condition was specified without a condition vector. Ignoring test.condition.", call. = FALSE)
-    }
-    if (!is.null(null.condition)) {
-      warning("null.condition was specified without a condition vector. Ignoring null.condition.", call. = FALSE)
-    }
     
-    # same as above, account for added duration data
-    if (is.null(duration)) {
-      min.duration <- 1
-    }
+    # account for added duration data
     if (!is.null(duration)) {
       min.duration <- min(duration)
       duration <- round(duration / min.duration, 0)
       data <- data[rep(1:nrow(data), times = duration), , drop = FALSE]
     }
     
-    d <- apply(data, 2, as.numeric)
+    # d <- apply(data, 2, as.numeric)
+    d <- data
     
     # remove empty rows
     comb.size <- Rfast::rowsums(d)
@@ -601,7 +580,8 @@ netfacs <- function(data,
     null.condition = null.condition
   )
   
-  stat_method <- ifelse(is.null(used.data$condition), "permutation", "bootstrap")
+  stat_method <- 
+    ifelse(is.null(used.data$condition), "permutation", "bootstrap")
   
   out <-
     list(

@@ -2,6 +2,7 @@
 % Please edit documentation in R/netfacs_extract.R
 \name{netfacs_extract}
 \alias{netfacs_extract}
+\alias{netfacs.extract}
 \title{Extract results from a netfacs object}
 \usage{
 netfacs_extract(
@@ -9,34 +10,38 @@ netfacs_extract(
   combination.size = NULL,
   significance = 1,
   min.count = 0,
-  min.prob = 0,
-  min.specificity = 0
+  min.prob = 0
+)
+
+netfacs.extract(
+  netfacs.data,
+  combination.size = NULL,
+  significance = 1,
+  min.count = 0,
+  min.prob = 0
 )
 }
 \arguments{
-\item{netfacs.data}{object resulting from \code{\link{netfacs}} function.}
+\item{netfacs.data}{An object of class \code{\link{netfacs}}.}
 
-\item{combination.size}{numeric, denoting the combination size(s) that should
-be extracted. If NULL (default), all combination sizes are returned.}
+\item{combination.size}{Numeric, denoting the combination size(s) that should
+be extracted. If \code{NULL} (default), all combination sizes are returned.}
 
-\item{significance}{numeric value between 0 and 1, determining the p-value
+\item{significance}{Numeric value between 0 and 1, determining the p-value
 below which combinations are considered to be dissimilar enough from the
 null distribution.}
 
-\item{min.count}{numeric value, suggesting how many times a combination
-should at least occur to be displayed.}
+\item{min.count}{Numeric, denoting the minimum number of times an element
+combination occurred.}
 
-\item{min.prob}{numeric value between 0 and 1, suggesting the probability at
-which a combination should at least occur to be displayed.}
-
-\item{min.specificity}{numeric value between 0 and 1, suggesting the
-specificity a combination should at least have for the test condition to be
-displayed.}
+\item{min.prob}{Numeric value between 0 and 1, denoting the minimum
+probability an element combination occurred to be displayed.}
 }
 \value{
-Function returns a dataframe that contains the results of the
-  \code{\link{netfacs}} object. By default, returns all results for all
-  observed combinations
+Function returns a \code{\link[tibble:tibble]{tibble}} data.frame
+  that contains the results of the \code{\link{netfacs}} object. By default,
+  returns all results for all observed combinations, but can optionally
+  pre-filter results.
 }
 \description{
 Extract results from a \code{\link{netfacs}} object.
@@ -48,15 +53,9 @@ angry.face <- netfacs(
   data = emotions_set[[1]],
   condition = emotions_set[[2]]$emotion,
   test.condition = "anger",
-  ran.trials = 100,
+  ran.trials = 10,
   combination.size = 2
 )
 
-netfacs_extract(angry.face,
-  combination.size = 2,
-  significance = 0.01,
-  min.count = 5,
-  min.prob = 0.01,
-  min.specificity = 0.5
-)
+netfacs_extract(angry.face)
 }

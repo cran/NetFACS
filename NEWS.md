@@ -1,3 +1,14 @@
+# NetFACS 0.5.0
+
+## Breaking changes
+- netfacs() function no longer calculates specificity by default. Specificity must now be calculated separately using the specificity() function. This change gives the user more flexibility in calculating specificity based on the raw data or by pre-upsampling minority conditions.
+- element.specificity() is replaced by specificity_increase()
+
+## Other changes
+
+- New functions: specificity(), upsample()
+- Objects created using the specificity() now have class "netfacs_specificity"
+
 # NetFACS 0.4.0
 
 ## Depricated functions and arguments

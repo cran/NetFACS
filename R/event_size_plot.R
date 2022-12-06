@@ -1,11 +1,13 @@
 #' Plots the probability that a combination of a certain size appears
 #'
-#' The function takes all combination size in a netfacs object, and plots the distribution of ratios between the observed value and all randomisations
+#' The function takes all combination size in a netfacs object, and plots the
+#' distribution of ratios between the observed value and all randomisations
 #'
 #'
 #' @param netfacs.data object resulting from netfacs() function
 #'
-#' @return Function returns a ggplot showing for each combination size the observed and expected probabilities of occurrance
+#' @return Function returns a ggplot showing for each combination size the
+#'   observed and expected probabilities of occurrence
 #'
 #' @importFrom dplyr across
 #' @importFrom dplyr filter
@@ -19,7 +21,7 @@
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #' @export
-#'
+#' 
 #' @examples
 #' ### how do angry facial expressions differ from non-angry ones?
 #' data(emotions_set)
@@ -31,8 +33,8 @@
 #'   combination.size = 2
 #' )
 #'
-#' event.size.plot(angry.face)
-event.size.plot <- function(netfacs.data) {
+#' event_size_plot(angry.face)
+event_size_plot <- function(netfacs.data) {
   # extract event size information from netfacs object
   plot.netfacs <-
     netfacs.data$event.size.information
@@ -81,4 +83,10 @@ event.size.plot <- function(netfacs.data) {
     theme_bw()
 
   return(p)
+}
+
+#' @rdname event_size_plot
+#' @export
+event.size.plot <- function(netfacs.data) {
+  event_size_plot(netfacs.data)
 }
